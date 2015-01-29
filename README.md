@@ -29,7 +29,7 @@ OPTIONS:
     --uid                   User ID to assign to the container's `jenkins` user
     --gid                   Group ID to assign to the container's `jenkins` user
     --password              Sets the password of the `jenkins` user.  Default password is `jenkins`.
-    --with-postgres true    Start postgres server.  Default is `true`.
+    --with-postgres true    Start postgres server.  Default is `false`.
     
 VOLUMES:
     All volumes mounted under `/home/jenkins` will be `chown`ed to the container's `jenkins` user.
