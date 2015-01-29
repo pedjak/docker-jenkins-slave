@@ -11,7 +11,7 @@ COPY locale /etc/default/locale
 
 #RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
 RUN apt-get -qq update
-RUN apt-get install -y build-essential python-software-properties software-properties-common wget curl git fontconfig
+RUN apt-get install -y build-essential python-software-properties software-properties-common wget curl git fontconfig docker.io
 
 # SSH server
 RUN apt-get install -y openssh-server
@@ -41,23 +41,11 @@ RUN update-alternatives --install /usr/bin/javac javac /opt/jdk/jdk1.7.0_67/bin/
 # Set Java and Maven env variables
 ENV M2_HOME /opt/maven/apache-maven-3.0.5
 ENV JAVA_HOME /opt/jdk/jdk1.7.0_67
-ENV JAVA_OPTS -Xmx2G -Xms2G -XX:PermSize=256M -XX:MaxPermSize=256m
-
-# Postgresql 9.3
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-RUN apt-get update
-RUN apt-get -y -q install postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
+#ENV JAVA_OPTS -Xmx2G -Xms2G -XX:PermSize=256M -XX:MaxPermSize=256m
 
 # Load scripts
 COPY bootstrap bootstrap
 RUN chmod +x -Rv bootstrap
-
-USER postgres
-
-RUN ./bootstrap/postgres.sh
-
-#VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 
 USER root
 
@@ -66,49 +54,18 @@ RUN adduser --quiet jenkins
 RUN adduser jenkins sudo
 RUN echo "jenkins:jenkins" | chpasswd
 
-# NVM
-RUN mkdir -p /opt/nvm
-RUN git clone https://github.com/creationix/nvm.git /opt/nvm
-RUN ./bootstrap/nvm.sh
-RUN echo "source /opt/nvm/nvm.sh" >> /root/.profile
-
 # Adjust perms for jenkins user
-RUN chown -R jenkins /opt/nvm
-RUN touch /home/jenkins/.profile
-RUN echo "source /opt/nvm/nvm.sh" >> /home/jenkins/.profile
+#RUN chown -R jenkins /opt/nvm
+COPY java-envs.sh /etc/profile.d/java-envs.sh
+#RUN echo "source /opt/nvm/nvm.sh" >> /home/jenkins/.profile
 RUN chown jenkins /home/jenkins/.profile
-
-# Ruby
-RUN apt-get install ruby1.9.1 ruby1.9.1-dev rubygems1.9.1 -y
-RUN gem install compass
-
-# Browsers
-RUN apt-get -y install xvfb x11-xkb-utils xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic dbus-x11 libfontconfig1-dev
-RUN apt-get -y install firefox chromium-browser ca-certificates
-
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -P /tmp/
-RUN dpkg -i /tmp/google-chrome-stable_current_amd64.deb || true
-RUN apt-get install -fy
-
-# Shim chrome to disable sandbox
-# See https://github.com/docker/docker/issues/1079
-RUN mv /usr/bin/google-chrome /usr/bin/google-chrome.orig
-COPY shims/google-chrome /usr/bin/google-chrome
-RUN chmod +x /usr/bin/google-chrome
-
-# xvfb
-COPY init.d/xvfb /etc/init.d/xvfb
-RUN chmod +x /etc/init.d/xvfb
-
-ENV DISPLAY :10
-ENV LD_LIBRARY_PATH /usr/lib/x86_64-linux-gnu/
-
-# Need some fonts
-COPY fonts/sourcesanspro /usr/share/fonts/sourcesanspro
-RUN fc-cache -v /usr/share/fonts/sourcesanspro
 
 # Standard SSH port
 EXPOSE 22
+RUN sed -i 's|PermitRootLogin without-password|PermitRootLogin yes|g' /etc/ssh/sshd_config
+
+#NFS
+RUN apt-get install -y nfs-common portmap
 
 # Startup services when running the container
 CMD ["./bootstrap/init.sh"]

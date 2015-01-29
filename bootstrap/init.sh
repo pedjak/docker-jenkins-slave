@@ -2,7 +2,7 @@
 
 uid=""
 gid=""
-withPostgres="true"
+withPostgres="false"
 password=""
 
 while [[ $# > 1 ]]
@@ -30,7 +30,7 @@ do
     esac
 done
 
-[ -z "$uid" ] || usermod --uid=$uid jenkins
+[ -z "$uid" ] || usermod -o --uid=$uid jenkins
 [ -z "$gid" ] || usermod --gid=$gid jenkins
 [ -z "$password" ] || echo "jenkins:$password" | chpasswd
 [ "$withPostgres" = "false" ] || /etc/init.d/postgresql start
