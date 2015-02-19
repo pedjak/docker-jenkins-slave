@@ -67,5 +67,7 @@ RUN sed -i 's|PermitRootLogin without-password|PermitRootLogin yes|g' /etc/ssh/s
 #NFS
 RUN apt-get install -y nfs-common portmap
 
+RUN apt-get install -y parallel
+
 # Startup services when running the container
 CMD ["./bootstrap/init.sh"]
