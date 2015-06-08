@@ -41,6 +41,8 @@ RUN update-alternatives --install /usr/bin/javac javac /opt/jdk/jdk1.7.0_67/bin/
 # Set Java and Maven env variables
 ENV M2_HOME /opt/maven/apache-maven-3.0.5
 ENV JAVA_HOME /opt/jdk/jdk1.7.0_67
+ENV JDK7_HOME /opt/jdk/jdk1.7.0_67
+ENV JDK8_HOME /opt/jdk/jdk1.8.0_11
 #ENV JAVA_OPTS -Xmx2G -Xms2G -XX:PermSize=256M -XX:MaxPermSize=256m
 
 # Load scripts
