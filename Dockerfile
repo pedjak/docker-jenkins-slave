@@ -41,8 +41,6 @@ RUN update-alternatives --install /usr/bin/javac javac /opt/jdk/jdk1.7.0_67/bin/
 # Set Java and Maven env variables
 ENV M2_HOME /opt/maven/apache-maven-3.0.5
 ENV JAVA_HOME /opt/jdk/jdk1.7.0_67
-ENV JDK7_HOME /opt/jdk/jdk1.7.0_67
-ENV JDK8_HOME /opt/jdk/jdk1.8.0_11
 #ENV JAVA_OPTS -Xmx2G -Xms2G -XX:PermSize=256M -XX:MaxPermSize=256m
 
 # Load scripts
@@ -58,7 +56,8 @@ RUN echo "jenkins:jenkins" | chpasswd
 
 # Adjust perms for jenkins user
 #RUN chown -R jenkins /opt/nvm
-COPY java-envs.sh /etc/profile.d/java-envs.sh
+RUN echo "JDK7_HOME=\"/opt/jdk/jdk1.7.0_67\"" >> /etc/environment
+RUN echo "JDK8_HOME=\"/opt/jdk/jdk1.8.0_11\"" >> /etc/environment
 #RUN echo "source /opt/nvm/nvm.sh" >> /home/jenkins/.profile
 RUN chown jenkins /home/jenkins/.profile
 
