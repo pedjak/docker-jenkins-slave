@@ -34,7 +34,7 @@ RUN cd /tmp/download &&	 wget --header "Cookie: oraclelicense=accept-securebacku
 
 # Set Java and Maven env variables
 RUN echo "JDK7_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
-RUN echo "JAVA_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
+#RUN echo "JAVA_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
 RUN echo "JDK8_HOME=\"`find /opt/jdk -name jdk1.8*`\"" >> /etc/environment
 
 # Maven 3.0.5
