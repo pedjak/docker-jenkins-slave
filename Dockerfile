@@ -13,7 +13,11 @@ COPY locale /etc/default/locale
 
 #RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
 RUN apt-get -qq update
-RUN apt-get install -y build-essential python-software-properties software-properties-common wget curl git fontconfig docker.io unzip
+RUN apt-get install -y apt-transport-https ca-certificates
+RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+RUN echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >> /etc/apt/sources.list
+RUN apt-get -qq update
+RUN apt-get install -y docker-engine=1.11.2-0~trusty build-essential python-software-properties software-properties-common wget curl git fontconfig  unzip
 
 # SSH server
 RUN apt-get install -y openssh-server
@@ -38,7 +42,7 @@ RUN echo "JDK7_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
 RUN echo "JDK8_HOME=\"`find /opt/jdk -name jdk1.8*`\"" >> /etc/environment
 
 # Maven 3.0.5
-RUN cd /tmp/download &&	wget http://apache.petsads.us/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz && \
+RUN cd /tmp/download &&	wget http://ftp.fau.de/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz && \
 	mkdir -p /opt/maven && \
 	tar -zxf apache-maven-3.0.5-bin.tar.gz -C /opt/maven && \
 	ln -s /opt/maven/apache-maven-3.0.5/bin/mvn /usr/bin && \
