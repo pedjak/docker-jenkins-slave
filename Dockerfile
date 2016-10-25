@@ -38,7 +38,7 @@ RUN echo "JDK7_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
 RUN echo "JDK8_HOME=\"`find /opt/jdk -name jdk1.8*`\"" >> /etc/environment
 
 # Maven 3.0.5
-RUN cd /tmp/download &&	wget http://apache.petsads.us/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz && \
+RUN cd /tmp/download &&	wget http://ftp.fau.de/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz && \
 	mkdir -p /opt/maven && \
 	tar -zxf apache-maven-3.0.5-bin.tar.gz -C /opt/maven && \
 	ln -s /opt/maven/apache-maven-3.0.5/bin/mvn /usr/bin && \
