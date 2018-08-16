@@ -7,7 +7,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 ENV JDK7_URL http://ftp.osuosl.org/pub/funtoo/distfiles/oracle-java/jdk-7u80-linux-x64.tar.gz
-ENV JDK8_URL http://download.oracle.com/otn-pub/java/jdk/8u141-b15/336fa29ff2bb4ef291e347e091f7f4a7/jdk-8u141-linux-x64.tar.gz
+ENV JDK8_URL https://repo.datastax.com/jdk-distributions/jdk-8u181-linux-x64.tar.gz
 
 COPY locale /etc/default/locale
 
@@ -28,15 +28,16 @@ RUN apt-get -qq update && \
 # Java 1.7
 RUN cd /tmp/download && wget --header "Cookie: oraclelicense=accept-securebackup-cookie" $JDK7_URL && \
 	tar -zxf `ls -1 *.tar.gz` -C /opt/jdk && \
-	rm * -rf && \
-# Set the default java version to 1.7
-	update-alternatives --install /usr/bin/java java `find /opt/jdk -name jdk1.7*`/bin/java 100 && \
-	update-alternatives --install /usr/bin/javac javac `find /opt/jdk -name jdk1.7*`/bin/javac 100
+	rm * -rf 
 
 # Java 1.8
 RUN cd /tmp/download &&	 wget --header "Cookie: oraclelicense=accept-securebackup-cookie" $JDK8_URL && \
 	tar -zxf `ls -1 *.tar.gz` -C /opt/jdk && \
 	rm * -rf
+
+# Set the default java version to 1.8
+RUN	update-alternatives --install /usr/bin/java java `find /opt/jdk -name jdk1.8*`/bin/java 100 && \
+	update-alternatives --install /usr/bin/javac javac `find /opt/jdk -name jdk1.8*`/bin/javac 100
 
 # Set Java and Maven env variables
 RUN echo "JDK7_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
