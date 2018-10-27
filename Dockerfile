@@ -6,8 +6,9 @@ RUN dpkg-reconfigure locales
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-ENV JDK7_URL http://ftp.osuosl.org/pub/funtoo/distfiles/oracle-java/jdk-7u80-linux-x64.tar.gz
+ENV JDK7_URL https://repo.datastax.com/jdk-distributions/jdk-7u80-linux-x64.tar.gz
 ENV JDK8_URL https://repo.datastax.com/jdk-distributions/jdk-8u181-linux-x64.tar.gz
+ENV JDK11_URL https://repo.datastax.com/jdk-distributions/jdk-11.0.1_linux-x64_bin.tar.gz
 
 COPY locale /etc/default/locale
 
@@ -26,12 +27,17 @@ RUN apt-get -qq update && \
 	rm -rf /var/lib/apt/lists/* 
 
 # Java 1.7
-RUN cd /tmp/download && wget --header "Cookie: oraclelicense=accept-securebackup-cookie" $JDK7_URL && \
+RUN cd /tmp/download && wget $JDK7_URL && \
 	tar -zxf `ls -1 *.tar.gz` -C /opt/jdk && \
 	rm * -rf 
 
 # Java 1.8
-RUN cd /tmp/download &&	 wget --header "Cookie: oraclelicense=accept-securebackup-cookie" $JDK8_URL && \
+RUN cd /tmp/download &&	 wget $JDK8_URL && \
+	tar -zxf `ls -1 *.tar.gz` -C /opt/jdk && \
+	rm * -rf
+
+# Java 11
+RUN cd /tmp/download &&	 wget $JDK11_URL && \
 	tar -zxf `ls -1 *.tar.gz` -C /opt/jdk && \
 	rm * -rf
 
@@ -40,9 +46,10 @@ RUN	update-alternatives --install /usr/bin/java java `find /opt/jdk -name jdk1.8
 	update-alternatives --install /usr/bin/javac javac `find /opt/jdk -name jdk1.8*`/bin/javac 100
 
 # Set Java and Maven env variables
-RUN echo "JDK7_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
+#RUN echo "JDK7_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
 #RUN echo "JAVA_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment
-RUN echo "JDK8_HOME=\"`find /opt/jdk -name jdk1.8*`\"" >> /etc/environment
+#RUN echo "JDK8_HOME=\"`find /opt/jdk -name jdk1.8*`\"" >> /etc/environment
+#RUN echo "JDK11_HOME=\"`find /opt/jdk -name jdk11*`\"" >> /etc/environment
 
 # Maven 3.0.5
 RUN cd /tmp/download &&	wget http://ftp.fau.de/apache/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz && \
@@ -76,6 +83,7 @@ RUN adduser --quiet jenkins && \
 #RUN chown -R jenkins /opt/nvm
 RUN echo "JDK7_HOME=\"`find /opt/jdk -name jdk1.7*`\"" >> /etc/environment && \
 	echo "JDK8_HOME=\"`find /opt/jdk -name jdk1.8*`\"" >> /etc/environment && \
+	echo "JDK11_HOME=\"`find /opt/jdk -name jdk-11*`\"" >> /etc/environment && \
 	chown jenkins /home/jenkins/.profile
 
 # Standard SSH port
